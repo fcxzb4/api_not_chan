@@ -7,18 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model comments {
-  id         BigInt    @id @default(autoincrement())
-  content    String
-  created_at DateTime? @default(now()) @db.Timestamptz(6)
-  post_id    BigInt
-  posts      posts     @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "fk_post")
+model Post {
+  id        BigInt    @id @default(autoincrement())
+  title     String
+  content   String
+  createdAt DateTime  @default(now())
+
+  comments  Comment[]
 }
 
-model posts {
-  id         BigInt     @id @default(autoincrement())
-  title      String
-  content    String
-  created_at DateTime?  @default(now()) @db.Timestamptz(6)
-  comments   comments[]
+model Comment {
+  id        BigInt    @id @default(autoincrement())
+  content   String
+  createdAt DateTime  @default(now())
+
+  postId    BigInt
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
