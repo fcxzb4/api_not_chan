@@ -1,22 +1,23 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prima.service';
 import { CreatePostDto } from './dto/create-post.dto';
-import { Post } from './post.entity';
 
 @Injectable()
 export class PostsService {
-  private posts: Post[] = [];
+  constructor(private readonly prisma: PrismaService) {}
 
-  findAll(): Post[] {
-    return this.posts;
+  async findAll() {
+    return this.prisma.post.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
   }
 
-  create(createPostDto: CreatePostDto): Post {
-    const newPost: Post = {
-      id: Date.now(),
-      ...createPostDto,
-    };
-
-    this.posts.push(newPost);
-    return newPost;
+  async create(createPostDto: CreatePostDto) {
+    return this.prisma.post.create({
+      data: {
+        title: createPostDto.title,
+        content: createPostDto.content,
+      },
+    });
   }
 }
