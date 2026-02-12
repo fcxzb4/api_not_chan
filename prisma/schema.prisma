@@ -8,7 +8,8 @@ datasource db {
 }
 
 model Post {
-  id        BigInt    @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   title     String
   content   String
   createdAt DateTime  @default(now())
@@ -17,10 +18,11 @@ model Post {
 }
 
 model Comment {
-  id        BigInt    @id @default(autoincrement())
+  id Int @id @default(autoincrement())
+
   content   String
   createdAt DateTime  @default(now())
 
-  postId    BigInt
+  postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
