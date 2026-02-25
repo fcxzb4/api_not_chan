@@ -16,17 +16,20 @@ export class PostsController {
     return this.postsService.create(createPostDto);
   }
 
- @Post('webhook')
-  async handleWebhook(
-    @Body() data: any,
-    @Headers('x-api-key') apiKey: string // Captura o cabeçalho específico
-  ) {
-    // Validação de Segurança Simples
-    if (apiKey !== 'uma-senha-secreta-123') {
-      throw new UnauthorizedException('Chave de API inválida');
-    }
+@Post('webhook')
+async handleWebhook(
+  @Body() body: any, // Renomeie para body para facilitar
+  @Headers('x-api-key') apiKey: string
+) {
+  if (apiKey !== 'uma-senha-secreta-123') {
+    throw new UnauthorizedException('Chave de API inválida');
+  }
 
-      console.log('Dados validados e recebidos:', data);
-      return this.postsService.create(data);
-    }
+  // Se o JSON do Activepieces vier com { data: { title: ... } }
+  // Nós pegamos apenas o que está dentro de data
+  const postData = body.data ? body.data : body;
+
+  console.log('Dados processados:', postData);
+  return this.postsService.create(postData);
+}
 }
