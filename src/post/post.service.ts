@@ -12,12 +12,12 @@ export class PostsService {
     });
   }
 
-  async create(createPostDto: CreatePostDto) {
-    return this.prisma.post.create({
-      data: {
-        title: createPostDto.title,
-        content: createPostDto.content,
-      },
-    });
-  }
+async create(createPostDto: any) {
+  return this.prisma.post.create({
+    data: {
+      title: createPostDto.title || 'Sem título',
+      content: createPostDto.content, // Aqui vai o {{ step_1.message.text }}
+    },
+  });
+}
 }

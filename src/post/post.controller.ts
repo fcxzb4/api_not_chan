@@ -25,8 +25,7 @@ async handleWebhook(
     throw new UnauthorizedException('Chave de API inválida');
   }
 
-  // Se o JSON do Activepieces vier com { data: { title: ... } }
-  // Nós pegamos apenas o que está dentro de data
+
   const postData = body.data ? body.data : body;
 
   console.log('Dados processados:', postData);
