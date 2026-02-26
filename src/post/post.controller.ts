@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, HttpCode, HttpStatus,UnauthorizedException,Headers } from '@nestjs/common';
+import { Controller, Get, Post, Body, HttpCode, HttpStatus,UnauthorizedException,Headers, Req} from '@nestjs/common';
 import { PostsService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
 
@@ -18,17 +18,17 @@ export class PostsController {
 
 @Post('webhook')
 async handleWebhook(
-  @Body() body: any, // Renomeie para body para facilitar
+  @Req() request: Request, // Captura o objeto bruto da requisição
   @Headers('x-api-key') apiKey: string
 ) {
+  console.log('Headers recebidos:', request.headers);
+  console.log('Body bruto recebido:', request.body); // Veja se aparece algo aqui
+
   if (apiKey !== 'uma-senha-secreta-123') {
-    throw new UnauthorizedException('Chave de API inválida');
+    throw new UnauthorizedException();
   }
 
-
-  const postData = body.data ? body.data : body;
-
-  console.log('Dados processados:', postData);
-  return this.postsService.create(postData);
-}
+  // Se o body chegar vazio aqui, o Activepieces não está enviando o payload no formato correto
+  return this.postsService.create(request.body);
+ }
 }
