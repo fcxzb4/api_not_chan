@@ -26,3 +26,16 @@ model Comment {
   postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
+
+enum Role {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+model User {
+  id    String @id // ID que vem do Supabase
+  email String @unique
+  role  Role   @default(USER)
+  createdAt DateTime @default(now())
+}
