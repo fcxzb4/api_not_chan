@@ -26,7 +26,7 @@ model Comment {
   postId    Int
   post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 
-  @@map("Comment") // Força o nome exato da tabela no Supabase
+ @@map("Comment")// Força o nome exato da tabela no Supabase
 }
 
 enum Role {
