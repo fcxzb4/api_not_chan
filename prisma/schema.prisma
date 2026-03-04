@@ -18,15 +18,19 @@ model Post {
 }
 
 model Comment {
-  id Int @id @default(autoincrement())
+  id         Int      @id @default(autoincrement())
+  content    String
+  
+  // Mapeia o nome do banco (post_id) para o nome no código (postId)
+  postId     Int      @map("post_id")
+  
+  // Mapeia o nome do banco (created_at) para o nome no código (createdAt)
+  createdAt  DateTime @default(now()) @map("created_at")
 
-  content   String
-  createdAt DateTime  @default(now()) @map("created_at")
+  // Relação com o modelo Post (certifique-se que o campo de relação aponte para postId)
+  post       Post     @relation(fields: [postId], references: [id])
 
-  postId    Int
-  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
-
- @@map("Comment")// Força o nome exato da tabela no Supabase
+  @@map("Comment")
 }
 
 enum Role {
