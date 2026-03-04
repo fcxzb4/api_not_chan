@@ -1,24 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException , } from '@nestjs/common';
+import { PrismaService } from '../prisma/prima.service'; // Ajuste o caminho se necessário
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { Comment } from './comment.entity';
 
 @Injectable()
 export class CommentsService {
-  private comments: Comment[] = [];
+  constructor(private readonly prisma: PrismaService) {}
 
-  findByPost(postId: number) {
-    return this.comments.filter(
-      (comment) => comment.postId === postId,
-    );
+  async findByPost(postId: number) {
+    return await this.prisma.comment.findMany({
+      where: { 
+        // Aqui garantimos que seja um número
+        postId: Number(postId) 
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
   }
 
-  create(createCommentDto: CreateCommentDto) {
-    const newComment: Comment = {
-      id: Date.now(),
-      ...createCommentDto,
-    };
+  async create(createCommentDto: CreateCommentDto) {
+    const { content, postId } = createCommentDto;
 
-    this.comments.push(newComment);
-    return newComment;
+    return await this.prisma.comment.create({
+      data: {
+        content: content,
+        // Converte para Number antes de enviar ao Prisma
+        postId: Number(postId), 
+      },
+    });
   }
 }

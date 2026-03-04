@@ -1,9 +1,9 @@
 ﻿import { Module } from '@nestjs/common';
-import { EventsGateway } from './events.gateaway';
+import { JwtStrategy } from './events.gateaway';
 import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [AuthModule],
-  providers: [EventsGateway]
+  providers: [JwtStrategy]
 })
 export class EventsModule {}
