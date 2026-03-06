@@ -5,23 +5,18 @@ import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  // app.use(cookieParser())
+
+  // CONFIGURAÇÃO DO CORS
   app.enableCors({
-    origin: true,
+    origin: [
+      'https://front-end-not-chan-kzq7gqe30-steezus-projects.vercel.app', // Seu domínio atual do Vercel
+      'http://localhost:5173', // Para você conseguir testar localmente também
+      /\.vercel\.app$/ // Isso permite qualquer subdomínio da vercel.app (útil para deploys de teste)
+    ],
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
     credentials: true,
   });
 
-  // Recomendado: Adicionar pipes de validação global
-  app.useGlobalPipes(new ValidationPipe());
-
-  // Importante para Vercel: Se houver um prefixo global (ex: /api)
-  // app.setGlobalPrefix('api');
-
-  // Na Vercel, o 'listen' é necessário para local, 
-  // mas o entry point precisa estar pronto.
   await app.listen(process.env.PORT || 3000);
 }
-
-// Inicializa o bootstrap
 bootstrap();
