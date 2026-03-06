@@ -1,6 +1,17 @@
-import { Controller, Get, Post, Body, HttpCode, HttpStatus,UnauthorizedException,Headers, Req} from '@nestjs/common';
+import { 
+  Controller, 
+  Get, 
+  Post, 
+  Body, 
+  UnauthorizedException, 
+  Headers, 
+  Req, 
+  UseGuards 
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport'; // Importe o Guard
 import { PostsService } from './post.service';
 import { CreatePostDto } from './dto/create-post.dto';
+import type  { Request as ExpressRequest } from 'express'; // Tipagem do Express
 
 @Controller('posts')
 export class PostsController {
@@ -11,24 +22,28 @@ export class PostsController {
     return this.postsService.findAll();
   }
 
+  // ROTA PROTEGIDA: Apenas usuários logados podem criar posts
   @Post()
-  create(@Body() createPostDto: CreatePostDto) {
-    return this.postsService.create(createPostDto);
+  @UseGuards(AuthGuard('supabase')) 
+  create(@Body() createPostDto: CreatePostDto, @Req() req: any) {
+    // O 'userId' vem do método 'validate' da sua SupabaseStrategy
+    const userId = req.user.userId;
+
+    // Passamos o DTO e o ID do autor para o Service
+    return this.postsService.create(createPostDto, userId);
   }
 
-@Post('webhook')
-async handleWebhook(
-  @Req() request: Request, // Captura o objeto bruto da requisição
-  @Headers('x-api-key') apiKey: string
-) {
-  console.log('Headers recebidos:', request.headers);
-  console.log('Body bruto recebido:', request.body); // Veja se aparece algo aqui
+  @Post('webhook')
+  async handleWebhook(
+    @Req() request: ExpressRequest,
+    @Headers('x-api-key') apiKey: string
+  ) {
+    if (apiKey !== 'uma-senha-secreta-123') {
+      throw new UnauthorizedException();
+    }
 
-  if (apiKey !== 'uma-senha-secreta-123') {
-    throw new UnauthorizedException();
+    // Webhooks geralmente não passam pelo Guard do Supabase, 
+    // pois vêm de serviços externos (Activepieces)
+    return this.postsService.create(request.body as any, 'SYSTEM_WEBHOOK');
   }
-
-  // Se o body chegar vazio aqui, o Activepieces não está enviando o payload no formato correto
-  return this.postsService.create(request.body);
- }
 }

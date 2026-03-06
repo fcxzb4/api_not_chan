@@ -12,11 +12,16 @@ export class PostsService {
     });
   }
 
-async create(createPostDto: any) {
+// post.service.ts
+
+async create(createPostDto: CreatePostDto, authorId: string) {
   return this.prisma.post.create({
     data: {
-      title: createPostDto.title || 'Sem título',
-      content: createPostDto.content, // Aqui vai o {{ step_1.message.text }}
+      title: createPostDto.title,
+      content: createPostDto.content,
+      // Se você ainda não tem a coluna authorId no banco, 
+      // adicione no schema.prisma primeiro!
+      authorId: authorId, 
     },
   });
 }

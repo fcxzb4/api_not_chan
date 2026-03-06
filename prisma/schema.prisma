@@ -13,7 +13,7 @@ model Post {
   title     String
   content   String
   createdAt DateTime  @default(now())
-
+  authorId  String    // UUID do Supabase Auth
   comments  Comment[]
 }
 
